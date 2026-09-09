@@ -1,0 +1,64 @@
+:root {
+  /* Warm Charcoal & Earthy Dark Canvas */
+  --bg-canvas: #141312;
+  --bg-surface: #1b1a18;
+  --bg-surface-elevated: #23221f;
+  --bg-surface-card: #1e1d1b;
+  --bg-surface-card-hover: #262522;
+  --bg-glass: rgba(20, 19, 18, 0.88);
+  --bg-subtle-glow: radial-gradient(circle at 50% 0%, rgba(252, 232, 162, 0.05), transparent 70%);
+
+  /* Borders */
+  --border-subtle: rgba(245, 242, 235, 0.08);
+  --border-medium: rgba(245, 242, 235, 0.15);
+  --border-strong: rgba(245, 242, 235, 0.28);
+  --border-accent: rgba(252, 232, 162, 0.35);
+
+  /* Typography Colors */
+  --text-primary: #f5f2eb;
+  --text-secondary: #b8b3a8;
+  --text-muted: #7d786e;
+  --text-subtle: #524e47;
+
+  /* Pastel Capsule Colors (Matched to Reference Aesthetic) */
+  --pastel-yellow-bg: #fce8a2;
+  --pastel-yellow-text: #362e0c;
+
+  --pastel-sage-bg: #dcf2b0;
+  --pastel-sage-text: #1d3311;
+
+  --pastel-blue-bg: #bfe3ec;
+  --pastel-blue-text: #13333a;
+
+  --pastel-lavender-bg: #e5ccf4;
+  --pastel-lavender-text: #311843;
+
+  --pastel-peach-bg: #fbd3be;
+  --pastel-peach-text: #412115;
+
+  /* Status Indicators */
+  --status-active: #5bc86f;
+  --status-active-glow: rgba(91, 200, 111, 0.35);
+
+  /* Fonts */
+  --font-serif: 'Newsreader', 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Radii */
+  --radius-full: 9999px;
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Transitions */
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Shadows */
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --shadow-glow-yellow: 0 0 35px rgba(252, 232, 162, 0.12);
+}
