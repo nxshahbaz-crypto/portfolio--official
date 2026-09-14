@@ -19,7 +19,7 @@ export const ContactSection = () => {
         origin: { y: 0.8 },
         colors: ['#FCE8A2', '#DCF2B0', '#E5CCF4', '#F5F2EB']
       });
-    } catch (e) {
+    } catch {
       // safe fallback
     }
 
@@ -44,30 +44,31 @@ export const ContactSection = () => {
 
           {/* Contact Details from Resume */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', alignItems: 'center', margin: '8px 0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--font-size-body-sm)', color: 'var(--text-secondary)' }}>
               <MapPin size={15} style={{ color: 'var(--pastel-yellow-bg)' }} />
               <span>{personal.location}</span>
             </div>
             <span style={{ opacity: 0.3 }}>•</span>
-            <a href={`tel:${personal.phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <a href={`tel:${personal.phone}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--font-size-body-sm)', color: 'var(--text-secondary)' }}>
               <Phone size={15} style={{ color: 'var(--pastel-sage-bg)' }} />
               <span>{personal.phone}</span>
             </a>
             <span style={{ opacity: 0.3 }}>•</span>
-            <a href={`mailto:${personal.email}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <a href={`mailto:${personal.email}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'var(--font-size-body-sm)', color: 'var(--text-secondary)' }}>
               <Mail size={15} style={{ color: 'var(--pastel-blue-bg)' }} />
               <span>{personal.email}</span>
             </a>
           </div>
 
-          <div className="contact-status-box">
-            <span className="pulse-dot" />
+          <div className="contact-status-box" role="status" aria-label={`Current status: ${contact.status}`}>
+            <span className="pulse-dot" aria-hidden="true" />
             <span>{contact.status}</span>
           </div>
 
           {/* Action Buttons */}
           <div className="contact-actions-row">
             <button
+              type="button"
               onClick={handleCopyEmail}
               className="btn-pill-primary"
               aria-label="Copy email address"
@@ -124,7 +125,7 @@ export const ContactSection = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="capsule-pill capsule-outline"
-              style={{ fontSize: '0.74rem', padding: '6px 12px' }}
+              title="LeetCode Profile"
             >
               LeetCode
             </a>
@@ -134,7 +135,7 @@ export const ContactSection = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="capsule-pill capsule-outline"
-              style={{ fontSize: '0.74rem', padding: '6px 12px' }}
+              title="GeeksforGeeks Profile"
             >
               GeeksforGeeks
             </a>
@@ -144,7 +145,7 @@ export const ContactSection = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="capsule-pill capsule-outline"
-              style={{ fontSize: '0.74rem', padding: '6px 12px' }}
+              title="HackerRank Profile"
             >
               HackerRank
             </a>

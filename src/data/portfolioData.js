@@ -9,17 +9,20 @@ export const portfolioData = {
   // Header & Personal Information (Exact from Resume)
   personal: {
     fullName: "Shahbaz Ahmed Khan",
-    headline: "Computer Science (AI & ML) Undergraduate · Software & AI Systems Engineer",
+    headline: "Computer Science (AI & ML) Undergraduate · Software & Intelligent Systems",
+    subStatement: "Undergraduate at Vardhaman College of Engineering (Current CGPA 8.4) focusing on Java, C++, Data Structures & Algorithms, and autonomous agentic workflows.",
+    greetingEmoji: "👋",
+    greetingText: "PORTFOLIO & SYSTEMS LOG",
     institution: "Vardhaman College of Engineering",
     degree: "B.Tech in Computer Science and Engineering (AI & ML) – Current CGPA: 8.4",
     location: "Hyderabad, Telangana",
     phone: "+91 9398394286",
     email: "nx.shahbaz@gmail.com",
     github: "https://github.com/nxshahbaz-crypto",
-    linkedin: "https://linkedin.com/in/shahbaz-ahmed-khan",
-    leetcode: "https://leetcode.com",
-    geeksforgeeks: "https://geeksforgeeks.org",
-    hackerrank: "https://hackerrank.com",
+    linkedin: "https://www.linkedin.com/in/shahbaz-khan-723852385/",
+    leetcode: "https://leetcode.com/u/shazzzkhan/",
+    geeksforgeeks: "https://www.geeksforgeeks.org/profile/nxshacujr?tab=activity",
+    hackerrank: "https://www.hackerrank.com/profile/nx_shahbaz",
     resumeUrl: "/resume.pdf",
     portraitImage: "/images/shahbaz-portrait.png",
     statusBadge: "OPEN FOR INTERNSHIPS · 2026-2027",
@@ -35,26 +38,30 @@ export const portfolioData = {
     {
       label: "Education",
       value: "Vardhaman College of Engineering",
-      sub: "B.Tech CSE (AI & ML) – Current CGPA: 8.4",
-      accent: "yellow"
+      sub: "B.Tech CSE (AI & ML) · CGPA: 8.4 (2025–2029)",
+      accent: "yellow",
+      tag: "Undergraduate"
     },
     {
-      label: "Flagship Engineering",
-      value: "Mark 1 AI System",
-      sub: "300+ Automated Tests · Gemini & Groq",
-      accent: "sage"
+      label: "Core Foundations",
+      value: "Java, C++ & DSA",
+      sub: "Object-Oriented Programming & Problem Solving",
+      accent: "sage",
+      tag: "Core CS"
     },
     {
       label: "Specialized Training",
-      value: "STTP: Building AI Agents",
-      sub: "From LLMs to Deployable Multi-Agent Systems",
-      accent: "lavender"
+      value: "Building AI Agents",
+      sub: "STTP: LLMs, RAG & Multi-Agent Systems",
+      accent: "lavender",
+      tag: "Verified STTP"
     },
     {
-      label: "Status",
-      value: "Open for Internships · 2026-2027",
-      sub: "Hyderabad, Telangana · Open to Relocation/Remote",
-      accent: "blue"
+      label: "Current Status",
+      value: "2026–2027 Internships",
+      sub: "Hyderabad, Telangana · Relocation/Remote",
+      accent: "blue",
+      tag: "Available"
     }
   ],
 
@@ -215,30 +222,31 @@ describe("Mark 1 AI Test Suite", () => {
       "Security Guardrails",
       "300+ Automated Tests"
     ],
-    githubUrl: "https://github.com/nxshahbaz-crypto",
-    liveDemoNote: "Backend deployment ready · Live integration staged for next phase"
+    githubUrl: "https://github.com/nxshahbaz-crypto/AI-agent_mark-1",
+    liveDemoUrl: "https://ai-agent-mark-1.vercel.app",
+    liveDemoNote: "Complete deployed application · Full UI frontend & dual-provider agent backend"
   },
 
-  // Projects (Exact from Resume)
+  // Projects (Exact from Resume & Projects Showcase)
   projects: [
     {
-      id: "startupsphere",
-      title: "StartupSphere",
-      subtitle: "Product Design & Development",
-      category: "Product Design & Development",
+      id: "ai-agent-mark-1",
+      title: "AI Agent — Mark 1",
+      subtitle: "Conversational AI & Agent Systems",
+      category: "Artificial Intelligence",
       year: "2026",
       tagColor: "#FCE8A2",
       featured: true,
       description:
-        "Designed and engineered a unified platform for founders, integrating idea validation, team building, hackathon discovery, and investor connections into a single workflow. Led product design and development as part of a B.Tech PDD project, producing a full technical report and presentation for evaluators. Deployed the platform on Replit with a consistent, custom-branded dark-theme UI.",
+        "A personal AI chatbot/AI agent project built to explore conversational AI and agent-style interactions.",
       bulletPoints: [
-        "Designed and engineered a unified platform for founders, integrating idea validation, team building, hackathon discovery, and investor connections into a single workflow.",
-        "Led product design and development as part of a B.Tech PDD project, producing a full technical report and presentation for evaluators.",
-        "Deployed the platform on Replit with a consistent, custom-branded dark-theme UI."
+        "A personal AI chatbot/AI agent project built to explore conversational AI and agent-style interactions.",
+        "Engineered with multi-provider failover, dynamic tool dispatch, and conversational memory.",
+        "Features a complete standalone web interface and an autonomous reasoning loop."
       ],
-      technologies: ["JavaScript", "HTML", "CSS", "Product Design", "Replit Deployment"],
-      githubUrl: "https://github.com/nxshahbaz-crypto",
-      liveDemoUrl: null
+      technologies: ["JavaScript", "LLMs", "Tool Calling", "Conversational AI", "Multi-Agent Systems"],
+      githubUrl: "https://github.com/nxshahbaz-crypto/AI-agent_mark-1",
+      liveDemoUrl: "https://ai-agent-mark-1.vercel.app"
     },
     {
       id: "assignment-platform",

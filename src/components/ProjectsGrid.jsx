@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Code, ExternalLink, Sparkles } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from './BrandIcons';
 import { portfolioData } from '../data/portfolioData';
 import { ProjectModal } from './ProjectModal';
@@ -8,7 +8,10 @@ export const ProjectsGrid = () => {
   const [activeFilter, setActiveFilter] = useState('All Projects');
   const [activeModalProject, setActiveModalProject] = useState(null);
 
-  const categories = ['All Projects', 'Full Stack Web', 'Engineering Systems'];
+  const categories = [
+    'All Projects',
+    ...Array.from(new Set(portfolioData.projects.map((p) => p.category)))
+  ];
 
   const filteredProjects = activeFilter === 'All Projects'
     ? portfolioData.projects
@@ -24,9 +27,10 @@ export const ProjectsGrid = () => {
       <div className="container">
         <div className="section-header">
           <span className="section-tag">ENGINEERING PORTFOLIO</span>
-          <h2 className="section-title">FEATURED PROJECTS</h2>
+          {/* Issue #6: Title case Featured Projects */}
+          <h2 className="section-title">Featured Projects</h2>
           <p className="section-subtitle">
-            Use the filters to explore projects by technical domain.
+            Projects developed as part of academic coursework and engineering problem solving.
           </p>
 
           {/* Filter Pills */}
@@ -34,6 +38,7 @@ export const ProjectsGrid = () => {
             {categories.map((cat) => (
               <button
                 key={cat}
+                type="button"
                 className={`filter-btn ${activeFilter === cat ? 'active' : ''}`}
                 onClick={() => setActiveFilter(cat)}
               >
@@ -43,17 +48,17 @@ export const ProjectsGrid = () => {
           </div>
         </div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid: Balanced 2-Column Layout */}
         <div className="projects-grid">
-          {filteredProjects.map((proj, idx) => (
+          {filteredProjects.map((proj) => (
             <div
               key={proj.id}
-              className={`project-card ${proj.featured && activeFilter === 'All Projects' ? 'featured-card' : ''}`}
+              className="project-card"
             >
               {/* Card Visual / Mockup Preview */}
               <div className="project-card-visual">
                 <div className="project-visual-badge">
-                  <span>{proj.readTime}</span>
+                  <span>{proj.year || proj.readTime}</span>
                 </div>
 
                 <div className="project-mockup-graphic">
@@ -61,19 +66,20 @@ export const ProjectsGrid = () => {
                     <div className="mockup-dot" />
                     <div className="mockup-dot" />
                     <div className="mockup-dot" />
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: '6px' }}>
+                    {/* Issue #7: Readable spec text >= 12px via shared metadata size */}
+                    <span className="mockup-spec-label">
                       {proj.id}.system.spec
                     </span>
                   </div>
                   <div className="mockup-body">
-                    <span className="capsule-pill capsule-outline" style={{ fontSize: '0.72rem' }}>
+                    <span className="capsule-pill capsule-outline">
                       {proj.category}
                     </span>
                     <div className="mockup-display-title">
                       {proj.title}
                     </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--pastel-yellow-bg)' }}>
-                      [Verified Architecture]
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--font-size-meta)', color: 'var(--pastel-yellow-bg)' }}>
+                      [Verified Project]
                     </span>
                   </div>
                 </div>
@@ -91,18 +97,18 @@ export const ProjectsGrid = () => {
                 {/* Tech Pills */}
                 <div className="project-tech-pills">
                   {proj.technologies.map((tech, tIdx) => (
-                    <span key={tIdx} className={`capsule-pill ${getTagStyleClass(tIdx)}`} style={{ fontSize: '0.72rem' }}>
+                    <span key={tIdx} className={`capsule-pill ${getTagStyleClass(tIdx)}`}>
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                {/* Card Footer */}
+                {/* Card Footer (Issue #3: Shared button variants) */}
                 <div className="project-card-footer">
                   <button
+                    type="button"
                     onClick={() => setActiveModalProject(proj)}
-                    className="btn-pill-secondary"
-                    style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+                    className="btn-pill-secondary btn-pill-sm"
                   >
                     <span>Inspect Specs</span>
                     <ArrowUpRight size={14} />
@@ -114,8 +120,7 @@ export const ProjectsGrid = () => {
                         href={proj.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-icon-pill"
-                        style={{ width: '34px', height: '34px' }}
+                        className="btn-icon-pill btn-icon-sm"
                         title="GitHub Source"
                         aria-label="GitHub Source"
                       >

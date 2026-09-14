@@ -9,6 +9,7 @@ import { ExperienceTimeline } from './components/ExperienceTimeline';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { CustomCursor } from './components/CustomCursor';
+import { PortfolioAssistant } from './components/PortfolioAssistant';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
+      <PortfolioAssistant />
     </div>
   );
 }

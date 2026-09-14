@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, FileText, ExternalLink } from 'lucide-react';
+import { Menu, X, FileText } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export const Navbar = () => {
@@ -51,7 +51,7 @@ export const Navbar = () => {
         </a>
 
         {/* Desktop Nav Links */}
-        <nav aria-label="Main Navigation">
+        <nav className="nav-container" aria-label="Main Navigation">
           <ul className="nav-links">
             {navLinks.map((link) => (
               <li key={link.id}>
@@ -68,21 +68,28 @@ export const Navbar = () => {
 
         {/* Right Actions */}
         <div className="nav-actions">
-          <div className="status-pill" title="Internship Availability">
-            <span className="pulse-dot" />
-            <span>2026-2027</span>
-          </div>
-
           <a
             href={portfolioData.personal.resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-pill-secondary"
-            style={{ padding: '8px 16px', fontSize: '0.82rem' }}
+            className="btn-pill-secondary btn-pill-sm nav-resume-btn"
           >
             <FileText size={14} />
             <span>Resume ↗</span>
           </a>
+
+          <div className="nav-divider" aria-hidden="true" />
+
+          {/* Issue #12 & #4: Semantic status badge at far end */}
+          <span
+            className="status-pill nav-status-badge"
+            role="status"
+            aria-label="Internship status: Open for Internships 2026-2027"
+          >
+            <span className="pulse-dot" aria-hidden="true" />
+            <span className="status-text-full">{portfolioData.personal.statusBadge}</span>
+            <span className="status-text-compact">2026-2027</span>
+          </span>
 
           {/* Mobile Toggle Button */}
           <button

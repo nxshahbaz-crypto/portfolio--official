@@ -39,11 +39,31 @@
   /* Status Indicators */
   --status-active: #5bc86f;
   --status-active-glow: rgba(91, 200, 111, 0.35);
+  --status-active-text: #8ce49a;
 
   /* Fonts */
   --font-serif: 'Newsreader', 'Fraunces', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Centralized 8-Step Typography Scale (Issue #1, #4, #7) */
+  --font-size-display: clamp(2.25rem, 4.2vw, 3.5rem); /* Display / Hero headline */
+  --font-size-h2: clamp(1.75rem, 3.2vw, 2.5rem);      /* Section titles */
+  --font-size-h3: 1.25rem;                            /* Subsection titles / card headings (20px) */
+  --font-size-body-lg: 1.0625rem;                     /* Large body / Hero subheadline (17px) */
+  --font-size-body: 1rem;                             /* Standard body (16px) */
+  --font-size-body-sm: 0.875rem;                      /* Small body / descriptions / buttons (14px) */
+  --font-size-label: 0.8125rem;                        /* Labels / status badge / small buttons (13px) */
+  --font-size-meta: 0.75rem;                          /* Code spec / timestamps / verified pills (12px) */
+
+  /* Spacing Scale & Gutters (Issue #10) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --grid-gutter: 32px;
 
   /* Radii */
   --radius-full: 9999px;
@@ -62,3 +82,4 @@
   --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.45);
   --shadow-glow-yellow: 0 0 35px rgba(252, 232, 162, 0.12);
 }
+

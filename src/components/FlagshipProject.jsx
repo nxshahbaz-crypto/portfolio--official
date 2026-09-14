@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Bot, Shield, Cpu, Database, Wrench, CheckCircle2, GitFork, ExternalLink, Terminal, ArrowRight } from 'lucide-react';
+import { Bot, Shield, Cpu, Database, Wrench, CheckCircle2, GitFork, Terminal, ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from './BrandIcons';
 import { portfolioData } from '../data/portfolioData';
+import { Mark1Chat } from './Mark1Chat';
 
 export const FlagshipProject = () => {
   const { flagship } = portfolioData;
@@ -56,30 +57,44 @@ export const FlagshipProject = () => {
             ))}
           </div>
 
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '28px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-body)', lineHeight: '1.7', marginBottom: '24px' }}>
             {flagship.overview}
           </p>
 
-          {/* Interactive Architecture Explorer */}
+          {/* Issue #9: Explanatory bridge clarifying the two interaction layers */}
+          <div className="architecture-guide-bridge">
+            <p className="bridge-copy">
+              Explore the 7-node architecture overview below, then dive into each subsystem specification.
+            </p>
+          </div>
+
+          {/* Layer 1: Interactive Architecture Overview */}
           <div className="architecture-explorer">
             <div className="architecture-title-bar">
               <div className="arch-title">
                 <Terminal size={18} />
-                <span>Interactive System Topology (Click node to inspect)</span>
+                <span>Architecture Topology Overview (Click node to inspect)</span>
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--font-size-meta)', color: 'var(--text-muted)' }}>
                 Active Node: {selectedNode.name}
               </span>
             </div>
 
             {/* Nodes Grid */}
-            <div className="arch-nodes-grid">
+            <div
+              className="arch-nodes-grid"
+              role="region"
+              aria-label="Architecture Topology Nodes"
+            >
               {flagship.architectureNodes.map((node) => (
                 <button
                   key={node.id}
+                  type="button"
                   className={`arch-node-btn ${selectedNodeId === node.id ? 'selected' : ''}`}
                   onClick={() => setSelectedNodeId(node.id)}
                   aria-pressed={selectedNodeId === node.id}
+                  aria-controls="arch-node-inspector"
+                  aria-label={`${node.category}: ${node.name}`}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span className="arch-node-cat">{node.category}</span>
@@ -92,15 +107,21 @@ export const FlagshipProject = () => {
             </div>
 
             {/* Inspector Details */}
-            <div className="arch-inspector">
+            <div
+              id="arch-node-inspector"
+              className="arch-inspector"
+              role="region"
+              aria-live="polite"
+              aria-label={`Node details for ${selectedNode.name}`}
+            >
               <div className="inspector-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="capsule-pill capsule-yellow" style={{ fontSize: '0.68rem', padding: '3px 8px' }}>
+                  <span className="capsule-pill capsule-yellow">
                     {selectedNode.category}
                   </span>
                   <span className="inspector-title">{selectedNode.name}</span>
                 </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--font-size-meta)', color: 'var(--text-muted)' }}>
                   Verified Component
                 </span>
               </div>
@@ -108,12 +129,28 @@ export const FlagshipProject = () => {
             </div>
           </div>
 
-          {/* Subsystems Deep Dive Tabs */}
+          {/* Layer 2: Subsystems Deep Dive Tabs */}
           <div className="subsystems-section">
-            <div className="subsystem-tabs">
+            <div className="subsystems-header-bar">
+              <span className="section-tag">Subsystem Specifications</span>
+              <p className="subsystems-header-sub">
+                Select a layer below to examine implementation details and verification criteria.
+              </p>
+            </div>
+
+            <div
+              className="subsystem-tabs"
+              role="tablist"
+              aria-label="Mark 1 AI Subsystem Specifications"
+            >
               {flagship.subsystems.map((sub) => (
                 <button
                   key={sub.id}
+                  id={`subsystem-tab-${sub.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTabId === sub.id}
+                  aria-controls={`subsystem-panel-${sub.id}`}
                   className={`subsystem-tab-btn ${activeTabId === sub.id ? 'active' : ''}`}
                   onClick={() => setActiveTabId(sub.id)}
                 >
@@ -122,7 +159,12 @@ export const FlagshipProject = () => {
               ))}
             </div>
 
-            <div className="subsystem-panel">
+            <div
+              id={`subsystem-panel-${activeSubsystem.id}`}
+              role="tabpanel"
+              aria-labelledby={`subsystem-tab-${activeSubsystem.id}`}
+              className="subsystem-panel"
+            >
               <div className="subsystem-details">
                 <h3 className="subsystem-heading">{activeSubsystem.title}</h3>
                 <p className="subsystem-desc">{activeSubsystem.description}</p>
@@ -137,13 +179,28 @@ export const FlagshipProject = () => {
               </div>
 
               <div className="subsystem-code-box">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', color: 'var(--text-muted)', fontSize: 'var(--font-size-meta)' }}>
                   <span>Architecture Specification</span>
                   <span>ES6 / Node.js</span>
                 </div>
                 <pre><code>{activeSubsystem.codeSnippet}</code></pre>
               </div>
             </div>
+          </div>
+
+          {/* Layer 3: Run the System (Interactive Live Mark 1 Experience) */}
+          <div className="mark1-interactive-layer">
+            <div className="mark1-interactive-header">
+              <span className="section-tag" style={{ color: 'var(--pastel-yellow-bg)', letterSpacing: '0.08em' }}>
+                ✦ RUN THE SYSTEM
+              </span>
+              <h3 className="mark1-interactive-title">Live Mark 1 Interaction</h3>
+              <p className="mark1-interactive-sub">
+                Try a live interaction below in this compact showcase, or open the complete deployed application (full frontend UI, agent controls &amp; session manager) in a new tab.
+              </p>
+            </div>
+
+            <Mark1Chat />
           </div>
 
           {/* Tech Stack Chips & Actions */}
@@ -159,20 +216,32 @@ export const FlagshipProject = () => {
               ))}
             </div>
 
-            <div className="flagship-cta-btns">
-              <a
-                href={flagship.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-pill-primary"
-              >
-                <GithubIcon size={16} />
-                <span>Mark 1 Repository</span>
-              </a>
+            <div className="flagship-cta-wrapper">
+              <div className="flagship-cta-btns">
+                <a
+                  href={flagship.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-pill-primary"
+                >
+                  <GithubIcon size={16} />
+                  <span>Mark 1 Repository</span>
+                  <ArrowUpRight size={15} />
+                </a>
 
-              <div className="flagship-demo-note" title="Backend integration scheduled for stage 2">
-                <span>{flagship.liveDemoNote}</span>
+                <a
+                  href={flagship.liveDemoUrl || "https://ai-agent-mark-1.vercel.app"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-pill-secondary"
+                >
+                  <span>Open Mark 1</span>
+                  <ArrowUpRight size={15} />
+                </a>
               </div>
+              <span className="flagship-demo-note">
+                {flagship.liveDemoNote}
+              </span>
             </div>
           </div>
         </div>

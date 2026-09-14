@@ -15,35 +15,47 @@ export const AboutSection = () => {
   };
 
   return (
-    <section id="about" className="section">
+    <section id="about" className="section about-section">
       <div className="container">
-        <div className="section-header" style={{ textAlign: 'left' }}>
-          <span className="section-tag">PROFESSIONAL SUMMARY</span>
+        {/* Section Tag with subtle accent */}
+        <div className="section-header about-header">
+          <span className="section-tag about-tag">✦ PROFESSIONAL SUMMARY</span>
         </div>
 
         <div className="about-grid">
-          {/* Left Narrative: Exact Professional Summary from Resume */}
+          {/* Left Narrative: Core Editorial Statement & Summary */}
           <div className="about-narrative">
-            <h2 className="about-heading" style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.1rem)', lineHeight: 1.35 }}>
-              Computer Science (AI &amp; ML) undergraduate with a strong foundation in Java, C++, DSA, and modern web development.
+            <h2 className="about-heading">
+              Computer Science (AI &amp; ML) undergraduate at Vardhaman College of Engineering, passionate about <em>scalable software</em> and <em>intelligent systems</em>.
             </h2>
-            <p className="about-text" style={{ fontSize: '1.05rem', lineHeight: 1.75 }}>
+
+            <p className="about-text">
               {professionalSummary}
             </p>
+
+            {/* Quick Direction / Focus Areas grounded in Resume */}
+            <div className="about-focus-pills" aria-label="Core focus areas">
+              <span className="capsule-pill capsule-outline">Java &amp; C++ OOP</span>
+              <span className="capsule-pill capsule-outline">Data Structures &amp; Algorithms</span>
+              <span className="capsule-pill capsule-outline">LLMs &amp; Multi-Agent Systems</span>
+              <span className="capsule-pill capsule-outline">Full-Stack Web</span>
+            </div>
           </div>
 
-          {/* Right Architecture Highlights */}
+          {/* Right Structured Highlights Cards */}
           <div className="about-highlights-grid">
             {summaryHighlights.map((item, idx) => (
               <div key={idx} className="highlight-card">
-                <div className="highlight-label">{item.label}</div>
-                <div className="highlight-val">{item.value}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  {item.sub}
+                <div>
+                  <div className="highlight-label">{item.label}</div>
+                  <div className="highlight-val">{item.value}</div>
+                  <div className="highlight-sub">
+                    {item.sub}
+                  </div>
                 </div>
-                <div style={{ marginTop: '12px' }}>
-                  <span className={`capsule-pill ${getCapsuleClass(item.accent)}`} style={{ fontSize: '0.7rem' }}>
-                    Verified
+                <div style={{ marginTop: '16px' }}>
+                  <span className={`capsule-pill ${getCapsuleClass(item.accent)}`}>
+                    {item.tag || 'Verified'}
                   </span>
                 </div>
               </div>

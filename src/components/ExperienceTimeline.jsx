@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Award, BookOpen, GitCommit, CheckCircle2, GraduationCap, Trophy } from 'lucide-react';
+import { Award, GitCommit, GraduationCap, Trophy } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export const ExperienceTimeline = () => {
@@ -38,7 +38,7 @@ export const ExperienceTimeline = () => {
               </div>
 
               <p className="timeline-desc">
-                Architected dual-provider inference (Gemini primary + Groq automatic fallback), dynamic Tool Registry, persistent Supabase conversation memory, vector RAG retrieval, smart context budgeting, and security guardrails verified with 300+ automated tests.
+                Engineered dual-provider inference (Gemini primary + Groq automatic fallback), dynamic Tool Registry, persistent Supabase conversation memory, vector RAG retrieval, smart context budgeting, and security guardrails verified with 300+ automated tests.
               </p>
             </div>
           </div>
