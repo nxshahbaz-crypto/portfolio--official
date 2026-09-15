@@ -8,7 +8,7 @@ import { defaultKnowledgeStore } from './knowledgeStore.js';
 /**
  * System prompt grounding template for the Portfolio Recruiter Assistant use-case
  */
-export const BASE_SYSTEM_PERSONA = `You are Shahbaz's Portfolio AI, an interviewer and recruiter assistant powered by the Mark 1 Agent Core.
+export const BASE_SYSTEM_PERSONA = `You are Shahbaz's Portfolio Assistant, an interviewer and recruiter assistant with knowledge of Shahbaz's portfolio.
 Your objective is to provide precise, professional, and technically thorough information about Shahbaz Ahmed Khan, his background, education, technical skills, projects, hackathons, and technical decisions.
 
 CRITICAL GROUNDING & IDENTITY RULES:
@@ -83,7 +83,7 @@ export class Mark1AgentSession {
       return {
         reply: "Please ask a question about Shahbaz's portfolio, skills, projects, or education.",
         retrievedEntities: [],
-        engine: 'Mark 1 Core'
+        engine: 'Portfolio Assistant'
       };
     }
 
@@ -92,8 +92,20 @@ export class Mark1AgentSession {
       return {
         reply: "I can only answer questions about Shahbaz's portfolio, skills, projects, and experience.",
         retrievedEntities: [],
-        engine: 'Mark 1 Core',
+        engine: 'Portfolio Assistant',
         guarded: true
+      };
+    }
+
+    // Check if query is arithmetic / calculator request
+    const isMath = /^(what is|calculate|compute|solve)?\s*[\d\s+\-*/^().%]+(\s*\?)?$/i.test(rawText.trim()) ||
+      /^[\d\s+\-*/^().=?%]+$/.test(rawText.trim());
+
+    if (isMath) {
+      return {
+        reply: "I am Shahbaz's portfolio assistant, dedicated to answering questions about his background, projects, skills, and experience.\n\nTo test calculator arithmetic (such as **1+1**), autonomous tool calling, and dual-provider failover, please try the **Live Mark 1** agent in the Mark 1 AI section above!",
+        retrievedEntities: [],
+        engine: 'Portfolio Assistant'
       };
     }
 
@@ -106,7 +118,7 @@ export class Mark1AgentSession {
       return {
         reply: "I don't have that information in Shahbaz's portfolio.",
         retrievedEntities: [],
-        engine: 'Mark 1 Core'
+        engine: 'Portfolio Assistant'
       };
     }
 
@@ -143,7 +155,7 @@ export class Mark1AgentSession {
     return {
       reply: responseText,
       retrievedEntities: retrieved.map((r) => r.title),
-      engine: 'Mark 1 Core',
+      engine: 'Portfolio Assistant',
       knowledgeStore: 'Supabase Knowledge Layer',
       activeTopic: this.activeEntityKey
     };
@@ -156,8 +168,8 @@ export class Mark1AgentSession {
     const lower = query.toLowerCase();
 
     // Check if query is completely unknown or outside the portfolio
-    if (retrievedEntries.length === 0) {
-      return "I don't have that information in Shahbaz's portfolio.";
+    if (!retrievedEntries || retrievedEntries.length === 0) {
+      return "I don't have that information in Shahbaz's portfolio. I can answer questions about Shahbaz's background, education, technical skills, and projects — or you can test autonomous tool execution with the **Live Mark 1** agent in the Mark 1 section!";
     }
 
     // A) SPECIFIC TOPIC: Tell me about Shahbaz / Background / Who is he
@@ -341,9 +353,12 @@ export class Mark1AgentSession {
         `- **HackerRank**: [nx_shahbaz](https://www.hackerrank.com/profile/nx_shahbaz)`;
     }
 
-    // Default Fallback: Grounded in the top retrieved entry
+    // Default Fallback: Grounded in the top retrieved entry if available
     const top = retrievedEntries[0];
-    return `According to Shahbaz's portfolio knowledge base regarding **${top.title}**:\n\n${top.summary}`;
+    if (top) {
+      return `According to Shahbaz's portfolio knowledge base regarding **${top.title}**:\n\n${top.summary}`;
+    }
+    return "I don't have that information in Shahbaz's portfolio. I can answer questions about Shahbaz's background, education, technical skills, and projects — or you can test autonomous tool execution with the **Live Mark 1** agent in the Mark 1 section!";
   }
 
   /**

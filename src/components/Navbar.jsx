@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, FileText } from 'lucide-react';
+import { Menu, X, FileText, Bot } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
-export const Navbar = () => {
+export const Navbar = ({ onOpenMark1, isMark1Open = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -63,6 +63,18 @@ export const Navbar = () => {
                 </a>
               </li>
             ))}
+            <li className="nav-item-try-mark1">
+              <button
+                type="button"
+                onClick={onOpenMark1}
+                className={`nav-link-try-mark1 ${isMark1Open ? 'active' : ''}`}
+                aria-label="Try Mark 1 AI — Open interactive chat assistant"
+                aria-expanded={isMark1Open}
+              >
+                <Bot size={13} aria-hidden="true" />
+                <span>Try Mark 1 AI</span>
+              </button>
+            </li>
           </ul>
         </nav>
 
@@ -105,7 +117,7 @@ export const Navbar = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="mobile-drawer">
+        <div className="mobile-drawer" role="dialog" aria-label="Mobile Navigation Menu">
           {navLinks.map((link) => (
             <a
               key={link.id}
@@ -116,6 +128,18 @@ export const Navbar = () => {
               {link.label}
             </a>
           ))}
+          <button
+            type="button"
+            className="mobile-nav-link mobile-nav-action"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenMark1?.();
+            }}
+            aria-label="Try Mark 1 AI — Open interactive chat assistant"
+          >
+            <Bot size={16} aria-hidden="true" />
+            <span>Try Mark 1 AI</span>
+          </button>
           <div style={{ paddingTop: '12px' }}>
             <a
               href={portfolioData.personal.resumeUrl}

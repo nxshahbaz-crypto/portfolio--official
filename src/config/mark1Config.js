@@ -22,13 +22,13 @@ export const MARK1_CONFIG = {
 
   // Client-side guardrails
   maxInputLength: 500,
-  requestTimeoutMs: 25000,
+  requestTimeoutMs: 50000,
 
   // Suggested capability demonstration prompts
   suggestedPrompts: [
-    'Explain how your provider failover works.',
-    'What tools can you use?',
-    'How does your knowledge base work?',
-    'How does Mark 1 handle context?'
+    'Tell me about Shahbaz.',
+    "What is Shahbaz's flagship project?",
+    'What technologies does Shahbaz know?',
+    'What projects has Shahbaz built?'
   ]
 };

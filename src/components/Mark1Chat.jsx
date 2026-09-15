@@ -6,20 +6,21 @@ let msgSeq = 0;
 const nextMsgId = (prefix) => `${prefix}-${++msgSeq}`;
 const nowTimestamp = () => Date.now();
 const formatElapsed = (start) => ((nowTimestamp() - start) / 1000).toFixed(1);
+const generateSessionId = () => `mark1-sess-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
 export const Mark1Chat = () => {
   const [messages, setMessages] = useState([
     {
       id: 'initial',
       role: 'assistant',
-      content: "Hi, I'm Mark 1. Ask me something to see the agent in action.",
+      content: "Hi, I'm Mark 1. Ask me about Shahbaz, his projects, skills, education, or Mark 1 AI.",
       isInitial: true
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [conversationId, setConversationId] = useState(null);
+  const [conversationId, setConversationId] = useState(generateSessionId);
   const [systemStatus, setSystemStatus] = useState({ online: true, text: 'Mark 1 Online · Dual Failover' });
 
   const messagesEndRef = useRef(null);
@@ -86,7 +87,7 @@ export const Mark1Chat = () => {
     try {
       const payload = {
         message: text,
-        ...(conversationId ? { conversationId } : {})
+        conversationId
       };
 
       const res = await fetch(MARK1_CONFIG.chatEndpoint, {
@@ -115,8 +116,10 @@ export const Mark1Chat = () => {
         : 'Gemini';
 
       const toolNames = Array.isArray(data.toolCalls) && data.toolCalls.length > 0
-        ? data.toolCalls.map((t) => t.name || t.tool || 'tool').filter(Boolean)
+        ? data.toolCalls.map((t) => (typeof t === 'string' ? t : (t.name || t.tool || 'tool'))).filter(Boolean)
         : [];
+
+      const ragCount = Array.isArray(data.retrievedChunks) ? data.retrievedChunks.length : 0;
 
       setMessages((prev) => [
         ...prev,
@@ -125,16 +128,18 @@ export const Mark1Chat = () => {
           role: 'assistant',
           content: reply,
           provider: providerLabel,
-          responseTime: `${elapsedSeconds}s response time`,
+          responseTime: `${elapsedSeconds}s`,
           toolCalls: toolNames,
+          steps: data.steps,
+          ragCount,
           isInitial: false
         }
       ]);
     } catch (err) {
       clearTimeout(timeoutId);
-      let userFriendly = 'Unable to reach Mark 1 right now. You can try again or visit the standalone deployment.';
+      let userFriendly = 'Mark 1 is temporarily unavailable. Try again or open the full application.';
       if (err.name === 'AbortError') {
-        userFriendly = 'Request timed out waiting for the reasoning pipeline. Please try again.';
+        userFriendly = 'Request timed out waiting for the reasoning pipeline. Please try again or open the full application.';
       }
       setErrorMsg(userFriendly);
     } finally {
@@ -154,11 +159,11 @@ export const Mark1Chat = () => {
       {
         id: 'initial',
         role: 'assistant',
-        content: "Hi, I'm Mark 1. Ask me something to see the agent in action.",
+        content: "Hi, I'm Mark 1. Ask me about Shahbaz, his projects, skills, education, or Mark 1 AI.",
         isInitial: true
       }
     ]);
-    setConversationId(null);
+    setConversationId(generateSessionId());
     setErrorMsg(null);
     setInputValue('');
   };
@@ -213,6 +218,8 @@ export const Mark1Chat = () => {
       {/* Chat Sub-Header / Telemetry Status */}
       <div className="mark1-chat-topbar">
         <div className="mark1-topbar-status">
+          <span className="mark1-header-title">Live Mark 1</span>
+          <span className="mark1-header-sep">·</span>
           <span className="pulse-dot" aria-hidden="true" />
           <span className="mark1-status-label">{systemStatus.text}</span>
         </div>
@@ -279,10 +286,20 @@ export const Mark1Chat = () => {
                       <span>{msg.responseTime}</span>
                     </span>
                   )}
+                  {msg.steps && msg.steps > 1 && (
+                    <span className="mark1-telemetry-chip">
+                      <span>{msg.steps} steps</span>
+                    </span>
+                  )}
                   {msg.toolCalls && msg.toolCalls.length > 0 && (
                     <span className="mark1-telemetry-chip mark1-chip-tools">
                       <Wrench size={11} />
                       <span>Tools: {msg.toolCalls.join(', ')}</span>
+                    </span>
+                  )}
+                  {msg.ragCount > 0 && (
+                    <span className="mark1-telemetry-chip">
+                      <span>RAG: {msg.ragCount} chunks</span>
                     </span>
                   )}
                 </div>
@@ -353,7 +370,7 @@ export const Mark1Chat = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value.slice(0, MARK1_CONFIG.maxInputLength))}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Mark 1 about its architecture, tools, or failover..."
+            placeholder="Ask Mark 1 (e.g. 'what is 1+1', tools, failover)..."
             aria-label="Ask Mark 1 a question"
             disabled={isLoading}
             maxLength={MARK1_CONFIG.maxInputLength}

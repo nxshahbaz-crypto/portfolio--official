@@ -1,34 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, RotateCcw, X, Sparkles, Database, ShieldCheck } from 'lucide-react';
-import { Mark1AgentSession } from '../services/mark1AgentCore';
+import { Bot, Send, RotateCcw, X, Cpu, Wrench, ArrowUpRight, AlertCircle } from 'lucide-react';
+import { MARK1_CONFIG } from '../config/mark1Config';
 
 let assistantSeq = 0;
 const nextMsgId = (prefix) => `${prefix}-${++assistantSeq}`;
+const nowTimestamp = () => Date.now();
+const formatElapsed = (start) => ((nowTimestamp() - start) / 1000).toFixed(1);
+const generateSessionId = () => `mark1-sess-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
 const SUGGESTED_PROMPTS = [
-  'Tell me about Mark 1.',
-  'What AI projects has Shahbaz built?',
-  'What technologies does Shahbaz work with?',
-  'What did Shahbaz build during his hackathon?',
-  'Explain the architecture of Mark 1.',
-  'What challenges has Shahbaz faced in his projects?'
+  'Tell me about Shahbaz.',
+  "What is Shahbaz's flagship project?",
+  'What technologies does Shahbaz know?',
+  'What projects has Shahbaz built?'
 ];
 
-export const PortfolioAssistant = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export const PortfolioAssistant = ({ isOpen: controlledIsOpen, setIsOpen: setControlledIsOpen }) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = setControlledIsOpen || setInternalIsOpen;
+
+  const [conversationId, setConversationId] = useState(generateSessionId);
   const [messages, setMessages] = useState([
     {
       id: 'initial',
       role: 'assistant',
-      content: "Hi! I'm Shahbaz's portfolio assistant. Ask me anything about his projects, technical skills, education, or experience.",
+      content: "Hi, I'm Mark 1. Ask me about Shahbaz, his projects, skills, education, or Mark 1 AI.",
       isInitial: true
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  // Mark 1 Agent Session instance preserved across component lifetime
-  const [agentSession] = useState(() => new Mark1AgentSession({ useCase: 'portfolio' }));
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -36,6 +39,21 @@ export const PortfolioAssistant = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Programmatic event listener for opening and focusing chat from navigation
+  useEffect(() => {
+    const handleOpenTrigger = () => {
+      setIsOpen(true);
+      setTimeout(() => inputRef.current?.focus(), 150);
+    };
+
+    window.__openMark1Chat = handleOpenTrigger;
+    window.addEventListener('open-mark1-chat', handleOpenTrigger);
+    return () => {
+      window.removeEventListener('open-mark1-chat', handleOpenTrigger);
+      delete window.__openMark1Chat;
+    };
+  }, [setIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -53,61 +71,102 @@ export const PortfolioAssistant = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   const handleSendMessage = async (textToSend) => {
     const text = (textToSend || inputValue).trim();
     if (!text || isLoading) return;
 
+    setErrorMsg(null);
     const userMsgId = nextMsgId('user');
     setMessages((prev) => [...prev, { id: userMsgId, role: 'user', content: text }]);
     setInputValue('');
     setIsLoading(true);
 
+    const startTime = nowTimestamp();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), MARK1_CONFIG.requestTimeoutMs);
+
     try {
-      const response = await agentSession.processMessage(text);
+      const payload = {
+        message: text,
+        conversationId
+      };
+
+      const res = await fetch(MARK1_CONFIG.chatEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+      const elapsedSeconds = formatElapsed(startTime);
+
+      if (!res.ok) {
+        throw new Error(`Mark 1 service responded with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      const reply = data.reply || 'Request completed with no content returned.';
+
+      if (data.conversationId) {
+        setConversationId(data.conversationId);
+      }
+
+      const providerLabel = data.provider
+        ? `${data.provider.charAt(0).toUpperCase() + data.provider.slice(1)}${data.fallback ? ' · Fallback' : ''}`
+        : 'Gemini';
+
+      const toolNames = Array.isArray(data.toolCalls) && data.toolCalls.length > 0
+        ? data.toolCalls.map((t) => (typeof t === 'string' ? t : (t.name || t.tool || 'tool'))).filter(Boolean)
+        : [];
+
+      const ragCount = Array.isArray(data.retrievedChunks) ? data.retrievedChunks.length : 0;
+
       setMessages((prev) => [
         ...prev,
         {
-          id: nextMsgId('assistant'),
+          id: nextMsgId('agent'),
           role: 'assistant',
-          content: response.reply,
-          engine: response.engine,
-          knowledgeStore: response.knowledgeStore,
+          content: reply,
+          provider: providerLabel,
+          responseTime: `${elapsedSeconds}s`,
+          toolCalls: toolNames,
+          steps: data.steps,
+          ragCount,
           isInitial: false
         }
       ]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: nextMsgId('assistant'),
-          role: 'assistant',
-          content: "I ran into a temporary issue retrieving the requested portfolio facts. Please try again.",
-          isInitial: false
-        }
-      ]);
+    } catch (err) {
+      clearTimeout(timeoutId);
+      let userFriendly = 'Mark 1 is temporarily unavailable. Try again or open the full application.';
+      if (err.name === 'AbortError') {
+        userFriendly = 'Request timed out waiting for the reasoning pipeline. Please try again or open the full application.';
+      }
+      setErrorMsg(userFriendly);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleReset = () => {
-    agentSession.resetSession();
+    setConversationId(generateSessionId());
     setMessages([
       {
         id: 'initial',
         role: 'assistant',
-        content: "Hi! I'm Shahbaz's portfolio assistant. Ask me anything about his projects, technical skills, education, or experience.",
+        content: "Hi, I'm Mark 1. Ask me about Shahbaz, his projects, skills, education, or Mark 1 AI.",
         isInitial: true
       }
     ]);
+    setErrorMsg(null);
     setInputValue('');
   };
 
   // Helper to format assistant responses
   const renderMessageContent = (content) => {
-    const paragraphs = content.split('\n\n');
+    const paragraphs = (content || '').split('\n\n');
     return paragraphs.map((para, pIdx) => {
       const lines = para.split('\n');
       return (
@@ -155,13 +214,13 @@ export const PortfolioAssistant = () => {
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={`portfolio-assistant-launcher-btn ${isOpen ? 'active' : ''}`}
-          aria-label={isOpen ? 'Close Shahbaz AI Assistant' : 'Ask Shahbaz AI — Portfolio Assistant'}
+          aria-label={isOpen ? 'Close Mark 1 AI' : 'Open Mark 1 AI — Live Agent'}
           aria-expanded={isOpen}
         >
           <div className="launcher-sparkle-icon">
-            <Sparkles size={16} />
+            <Bot size={16} />
           </div>
-          <span className="launcher-label">Ask Shahbaz AI</span>
+          <span className="launcher-label">Mark 1 AI</span>
           <span className="launcher-pulse-dot" aria-hidden="true" />
         </button>
       </div>
@@ -171,7 +230,7 @@ export const PortfolioAssistant = () => {
         <div
           className="portfolio-assistant-modal"
           role="dialog"
-          aria-label="Shahbaz's Portfolio AI Assistant"
+          aria-label="Mark 1 AI Assistant"
           aria-modal="true"
         >
           {/* Top Bar Header */}
@@ -182,10 +241,9 @@ export const PortfolioAssistant = () => {
               </div>
               <div className="assistant-title-group">
                 <div className="assistant-title-row">
-                  <h3 className="assistant-title">Shahbaz's Portfolio AI</h3>
-                  <span className="assistant-badge">Mark 1 Powered</span>
+                  <h3 className="assistant-title">Mark 1 AI</h3>
                 </div>
-                <p className="assistant-sub">Recruiter & Interviewer Assistant</p>
+                <p className="assistant-sub">Live agent · Gemini + Groq failover</p>
               </div>
             </div>
 
@@ -199,6 +257,16 @@ export const PortfolioAssistant = () => {
               >
                 <RotateCcw size={14} />
               </button>
+              <a
+                href={MARK1_CONFIG.appUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="assistant-header-btn"
+                title="Open standalone Mark 1 deployment in new tab"
+                aria-label="Open standalone Mark 1 deployment"
+              >
+                <ArrowUpRight size={15} />
+              </a>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
@@ -216,7 +284,7 @@ export const PortfolioAssistant = () => {
             className="assistant-viewport"
             role="log"
             aria-live="polite"
-            aria-label="Conversation log with Shahbaz Portfolio AI"
+            aria-label="Conversation log with Mark 1 AI"
           >
             {messages.map((msg) => (
               <div
@@ -234,17 +302,36 @@ export const PortfolioAssistant = () => {
                     {renderMessageContent(msg.content)}
                   </div>
 
-                  {/* Architecture grounding telemetry */}
+                  {/* Real Mark 1 Telemetry Chips */}
                   {msg.role === 'assistant' && !msg.isInitial && (
                     <div className="assistant-telemetry">
-                      <span className="assistant-telemetry-pill">
-                        <Database size={10} />
-                        <span>Supabase Knowledge Layer</span>
-                      </span>
-                      <span className="assistant-telemetry-pill">
-                        <ShieldCheck size={10} />
-                        <span>Grounded Portfolio Facts</span>
-                      </span>
+                      {msg.provider && (
+                        <span className="assistant-telemetry-pill">
+                          <Cpu size={10} />
+                          <span>{msg.provider}</span>
+                        </span>
+                      )}
+                      {msg.responseTime && (
+                        <span className="assistant-telemetry-pill">
+                          <span>{msg.responseTime}</span>
+                        </span>
+                      )}
+                      {msg.steps && msg.steps > 1 && (
+                        <span className="assistant-telemetry-pill">
+                          <span>{msg.steps} steps</span>
+                        </span>
+                      )}
+                      {msg.toolCalls && msg.toolCalls.length > 0 && (
+                        <span className="assistant-telemetry-pill assistant-chip-tools">
+                          <Wrench size={10} />
+                          <span>Tools: {msg.toolCalls.join(', ')}</span>
+                        </span>
+                      )}
+                      {msg.ragCount > 0 && (
+                        <span className="assistant-telemetry-pill">
+                          <span>RAG: {msg.ragCount} chunks</span>
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -258,13 +345,21 @@ export const PortfolioAssistant = () => {
                   <Bot size={15} />
                 </div>
                 <div className="assistant-bubble bubble-agent bubble-loading">
-                  <div className="assistant-typing-dots" aria-label="Searching knowledge store">
+                  <div className="assistant-typing-dots" aria-label="Mark 1 is reasoning">
                     <span />
                     <span />
                     <span />
                   </div>
-                  <span className="assistant-loading-text">Consulting knowledge store...</span>
+                  <span className="assistant-loading-text">Mark 1 is reasoning...</span>
                 </div>
+              </div>
+            )}
+
+            {/* Graceful Error Banner */}
+            {errorMsg && (
+              <div className="assistant-error-banner" role="alert">
+                <AlertCircle size={14} />
+                <span>{errorMsg}</span>
               </div>
             )}
 
@@ -273,7 +368,7 @@ export const PortfolioAssistant = () => {
 
           {/* Quick Suggested Question Pills */}
           <div className="assistant-suggestions-area">
-            <span className="assistant-suggestions-label">SUGGESTED QUESTIONS:</span>
+            <span className="assistant-suggestions-label">TRY ASKING:</span>
             <div className="assistant-pills-row">
               {SUGGESTED_PROMPTS.map((prompt, idx) => (
                 <button
@@ -302,21 +397,22 @@ export const PortfolioAssistant = () => {
                 ref={inputRef}
                 type="text"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value.slice(0, 500))}
-                placeholder="Ask about Shahbaz's projects, skills, education..."
+                onChange={(e) => setInputValue(e.target.value.slice(0, MARK1_CONFIG.maxInputLength))}
+                placeholder="Ask Mark 1 about Shahbaz, projects, skills, or failover..."
                 className="assistant-input-field"
                 disabled={isLoading}
-                maxLength={500}
-                aria-label="Ask Shahbaz AI"
+                maxLength={MARK1_CONFIG.maxInputLength}
+                aria-label="Ask Mark 1 a question"
               />
               <span className="assistant-char-counter">
-                {inputValue.length}/500
+                {inputValue.length}/{MARK1_CONFIG.maxInputLength}
               </span>
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
                 className="assistant-send-btn"
-                aria-label="Send message"
+                aria-label="Send message to Mark 1"
+                title="Send message"
               >
                 <Send size={15} />
               </button>

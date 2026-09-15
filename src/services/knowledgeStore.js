@@ -371,12 +371,15 @@ export class KnowledgeStore {
           if (summaryLower.includes(token)) score += 5;
         });
 
-        // 5. Priority boost
-        score += (entry.priority || 0) * 0.1;
+        // 5. Priority boost (applied only if there is at least one content/tag match)
+        const hasContentMatch = score > 0;
+        if (hasContentMatch) {
+          score += (entry.priority || 0) * 0.1;
+        }
 
-        return { entry, score };
+        return { entry, score, hasContentMatch };
       })
-      .filter((item) => item.score > 5)
+      .filter((item) => item.hasContentMatch && item.score > 5)
       .sort((a, b) => b.score - a.score);
 
     return scored.slice(0, limit).map((s) => s.entry);

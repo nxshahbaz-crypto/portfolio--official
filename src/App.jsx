@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
@@ -12,10 +12,19 @@ import { CustomCursor } from './components/CustomCursor';
 import { PortfolioAssistant } from './components/PortfolioAssistant';
 
 function App() {
+  const [isMark1Open, setIsMark1Open] = useState(false);
+
+  const handleOpenMark1 = useCallback(() => {
+    setIsMark1Open(true);
+    if (typeof window !== 'undefined' && window.__openMark1Chat) {
+      window.__openMark1Chat();
+    }
+  }, []);
+
   return (
     <div className="portfolio-app">
       <CustomCursor />
-      <Navbar />
+      <Navbar onOpenMark1={handleOpenMark1} isMark1Open={isMark1Open} />
       <main id="main-content">
         <Hero />
         <AboutSection />
@@ -26,7 +35,7 @@ function App() {
         <ContactSection />
       </main>
       <Footer />
-      <PortfolioAssistant />
+      <PortfolioAssistant isOpen={isMark1Open} setIsOpen={setIsMark1Open} />
     </div>
   );
 }

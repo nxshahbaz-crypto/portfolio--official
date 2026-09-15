@@ -89,6 +89,65 @@
   border-radius: 2px;
 }
 
+/* Navigation Action: Try Mark 1 AI */
+.nav-item-try-mark1 {
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-link-try-mark1 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(252, 232, 162, 0.08);
+  border: 1px solid rgba(252, 232, 162, 0.28);
+  border-radius: var(--radius-full);
+  color: var(--pastel-yellow-bg);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.nav-link-try-mark1:hover,
+.nav-link-try-mark1.active {
+  background: rgba(252, 232, 162, 0.18);
+  border-color: rgba(252, 232, 162, 0.55);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.nav-link-try-mark1:focus-visible {
+  outline: 2px solid var(--pastel-yellow-bg);
+  outline-offset: 2px;
+}
+
+/* Mobile Drawer Action */
+.mobile-nav-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--font-size-body-lg);
+  font-weight: 500;
+  color: var(--pastel-yellow-bg);
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.mobile-nav-action:hover {
+  color: #ffffff;
+}
+
 .nav-actions {
   display: inline-flex;
   align-items: center;
@@ -942,6 +1001,20 @@
   font-size: var(--font-size-meta);
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.mark1-header-title {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-meta);
+  font-weight: 700;
+  color: var(--pastel-yellow-bg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mark1-header-sep {
+  color: var(--text-muted);
+  font-size: var(--font-size-meta);
 }
 
 .mark1-topbar-actions {
@@ -2199,6 +2272,24 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 2px 7px;
   border-radius: var(--radius-full);
+}
+
+.assistant-chip-tools {
+  color: var(--pastel-sage-bg);
+  border-color: rgba(220, 242, 176, 0.25);
+}
+
+.assistant-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-sm);
+  color: #ff8585;
+  font-size: 0.76rem;
+  margin-top: 4px;
 }
 
 .assistant-typing-dots {
