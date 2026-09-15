@@ -12,11 +12,6 @@ export const Hero = () => {
         <div className="hero-grid">
           {/* Left Editorial Narrative */}
           <div className="hero-content">
-            <div className="hero-greeting">
-              <span>{personal.greetingEmoji}</span>
-              <span>{personal.greetingText}</span>
-            </div>
-
             <h1 className="hero-headline">
               I'm Shahbaz — a Computer Science (AI &amp; ML) student building my way into the world of <em>software and intelligent systems</em>.
             </h1>
